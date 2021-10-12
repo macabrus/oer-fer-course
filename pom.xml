@@ -7,7 +7,15 @@
   <groupId>hr.fer.zemris.trisat</groupId>
   <artifactId>oer-01</artifactId>
   <version>1.0-SNAPSHOT</version>
-  <packaging>jar</packaging>
+    <dependencies>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.7.0</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    <packaging>jar</packaging>
 
   <properties>
     <maven.compiler.source>15</maven.compiler.source>
