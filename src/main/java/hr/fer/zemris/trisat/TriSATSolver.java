@@ -1,7 +1,7 @@
 package hr.fer.zemris.trisat;
 
+import hr.fer.zemris.trisat.algorithm.BruteForce;
 import hr.fer.zemris.trisat.algorithm.GSAT;
-import hr.fer.zemris.trisat.algorithm.ILS;
 import hr.fer.zemris.trisat.algorithm.RandomWalkSat;
 
 import java.io.BufferedReader;
@@ -44,9 +44,9 @@ public class TriSATSolver {
         }
         var formula = new SATFormula(numVars, bitVectors);
         IOptAlgorithm alg = switch (algo) {
-            case 1 -> new GSAT(formula);
+            case 1 -> new BruteForce(formula);
             case 2 -> new RandomWalkSat(formula);
-            case 3 -> new ILS(formula);
+            case 3 -> new GSAT(formula);
             default -> throw new UnsupportedOperationException("Algorithm not implemented");
         };
         Optional<BitVector> solution = alg.solve(Optional.of(new BitVector(numVars)));

@@ -24,40 +24,14 @@ public class SATFormula {
         return masks.length;
     }
 
-    private void sleep(int ms) {
-        try {
-            Thread.sleep(ms);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+    public boolean satisfiesClause(BitVector input, int clauseIndex) {
+        return !input.copy().xor(inverts[clauseIndex]).and(masks[clauseIndex]).isEmpty();
     }
 
     public boolean isSatisfied(BitVector assignment) {
         var input = assignment.copy();
-        var a =
-            "10000100100001101001\n" +
-            "10000100000011101001\n" +
-            "10010100000011101001\n" +
-            "10000100100011101001\n" +
-            "10010000010011101001\n" +
-            "10010100010011101001\n" +
-            "10010001010011101001\n" +
-            "01110001111001101111";
         for (int i = 0; i < masks.length; i++) {
-            // prvo moram ANDat input sa maskom varijabli
-            // onda moram xorat rezultat sa invertima
-//            var filteredVars = inputs.and(masks[i]);
-//            var filteredSigns = inverts[i].copy().and(masks[i]);
             var result = input.xor(inverts[i]).and(masks[i]);
-
-//            if (input.toString().equals("00000100100001101001")) {
-//                System.out.println("INPUT    " + input);
-//                System.out.println("VARS     " + masks[i]);
-//                System.out.println("FLIP     " + inverts[i]);
-//                System.out.println("RESULT   " + result);
-//                System.out.println("-".repeat(30));
-////                sleep(1000);
-//            }
             if (result.isEmpty()) {
                 return false;
             }

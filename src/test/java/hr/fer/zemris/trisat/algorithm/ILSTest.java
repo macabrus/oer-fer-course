@@ -8,15 +8,14 @@ import org.junit.jupiter.api.Test;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class GSATTest {
-
-    private SATFormula formula;
+class ILSTest {
 
     public SATFormula prepareFormula(String inputFile) {
         var is = TriSATSolver.class.getResourceAsStream( inputFile);
@@ -51,65 +50,37 @@ class GSATTest {
     }
 
     @Test
-    public void test01() {
+    void test01() {
         var formula = prepareFormula("/01-3sat/uf20-01.cnf");
         var expect = new HashSet<>(Arrays.asList(
-                "10000100100001101001",
-                "10000100000011101001",
-                "10010100000011101001",
-                "10000100100011101001",
-                "10010000010011101001",
-                "10010100010011101001",
-                "10010001010011101001",
-                "01110001111001101111"
-            ));
-        var gsat = new GSAT(formula);
-        var solutions = gsat.solveAll(new BitVector(20));
-        assertEquals(solutions, expect);
+            "10000100100001101001",
+            "10000100000011101001",
+            "10010100000011101001",
+            "10000100100011101001",
+            "10010000010011101001",
+            "10010100010011101001",
+            "10010001010011101001",
+            "01110001111001101111"
+        ));
+        var ils = new ILS(formula);
+        var res = ils.solve(Optional.empty()).orElse(null);
+        if (res == null) {
+            System.out.println("Solution was not found which is acceptable.");
+        }
+        else {
+            System.out.println("Solution was found!");
+            assertTrue(expect.contains(res.toString()));
+        }
     }
 
     @Test
-    public void test010() {
-        var formula = prepareFormula("/01-3sat/uf20-010.cnf");
-        var expect = new HashSet<>(Arrays.asList(
-            "00111101100001100010",
-            "00111101100101100010",
-            "00111101100101110010",
-            "10111100100111100011",
-            "00111101100111100011",
-            "10111101100111100011",
-            "10111100110111100011",
-            "01001111000111110011",
-            "00111101100111110011"
-        ));
-        var gsat = new GSAT(formula);
-        var solutions = gsat.solveAll(new BitVector(20));
-        assertEquals(solutions, expect);
+    void test010() {
+
     }
 
     @Test
-    public void test0100() {
-        var formula = prepareFormula("/01-3sat/uf20-0100.cnf");
-        var expect = new HashSet<>(Arrays.asList(
-            "01110011100111110010",
-            "01110011100111110011",
-            "01111011100111110011",
-            "01101101110011101011"
-        ));
-        var gsat = new GSAT(formula);
-        var solutions = gsat.solveAll(new BitVector(20));
-        assertEquals(solutions, expect);
-    }
+    void test0100() {
 
-    @Test
-    public void test01000() {
-        var formula = prepareFormula("/01-3sat/uf20-01000.cnf");
-        var expect = new HashSet<>(Collections.singletonList(
-            "01011010100000011010"
-        ));
-        var gsat = new GSAT(formula);
-        var solutions = gsat.solveAll(new BitVector(20));
-        assertEquals(solutions, expect);
     }
 
 }

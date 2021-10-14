@@ -1,18 +1,29 @@
 package hr.fer.zemris.trisat;
 
 public class SATFormulaStats {
-    public SATFormulaStats(SATFormula formula) {
+    private SATFormula formula;
+    private BitVector assignment;
 
+    public SATFormulaStats(SATFormula formula) {
+        this.formula = formula;
     }
 
     // analizira se predano rješenje i pamte svi relevantni pokazatelji
     // primjerice, ažurira elemente polja post[...] ako drugi argument to dozvoli; računa Z; ...
     public void setAssignment(BitVector assignment, boolean updatePercentages) {
+        this.assignment = assignment;
     }
 
     // vraća temeljem onoga što je setAssignment zapamtio: broj klauzula koje su zadovoljene
     public int getNumberOfSatisfied() {
-        return 0;
+//        for(var clause : formula.)
+        int total = 0;
+        for (int i = 0; i < formula.getNumberOfClauses(); i++) {
+            if (formula.satisfiesClause(assignment, i)) {
+                total ++;
+            }
+        }
+        return total;
     }
 
     // vraća temeljem onoga što je setAssignment zapamtio

@@ -16,8 +16,8 @@ public class BitVector {
         }
     }
 
-    public BitVector(BitSet backingSet) {
-        len = backingSet.length();
+    public BitVector(BitSet backingSet, int numberOfBits) {
+        len = numberOfBits;
         bitSet = backingSet;
     }
 
@@ -41,7 +41,7 @@ public class BitVector {
 
     // vraća broj varijabli koje predstavlja
     public int getSize() {
-        return bitSet.size();
+        return len;
     }
 
     public boolean isEmpty() {

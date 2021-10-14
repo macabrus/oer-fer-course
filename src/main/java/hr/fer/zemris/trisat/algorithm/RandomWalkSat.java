@@ -9,13 +9,18 @@ import java.util.Optional;
 public class RandomWalkSat implements IOptAlgorithm {
     private SATFormula formula;
 
-    public RandomWalkSat(SATFormula formula) {
+    private static final int MAX_TRIES = 3;
+    private static final int MAX_FLIPS = 1;
 
+    public RandomWalkSat(SATFormula formula) {
         this.formula = formula;
     }
 
     @Override
     public Optional<BitVector> solve(Optional<BitVector> initial) {
+        for (int retry = 0; retry < MAX_TRIES; retry ++) {
+
+        }
         return Optional.empty();
     }
 }
