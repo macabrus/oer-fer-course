@@ -7,19 +7,19 @@ import hr.fer.zemris.trisat.SATFormulaStats;
 
 import java.util.*;
 
-// Multistart local search
+// Multistart local search (isti ko zadatak 2 ako stavimo max tries = 1)
 // 1. starts with n random inputs
 // 2. evaluate their fitness
 // 3. compute neighbors of fittest one
 // 4. neighbors are new inputs
-public class ILS implements IOptAlgorithm {
+public class Algorithm2 implements IOptAlgorithm {
     private static final int MAX_ITER = 100000; // force stop even if local optimum is not yet found
-    private static final int MAX_TRIES = 10; // start at 10 random locations
+    private static final int MAX_TRIES = 1; // start at 10 random locations
     private final Random rand = new Random();
 
     private final SATFormula formula;
 
-    public ILS(SATFormula formula) {
+    public Algorithm2(SATFormula formula) {
         this.formula = formula;
     }
 
@@ -49,10 +49,11 @@ public class ILS implements IOptAlgorithm {
                 }
                 Integer topScore = Arrays.stream(scores).max().getAsInt();
                 System.out.println("Top score in neighbors is: " + topScore);
+                // ako nema boljeg od trenutnog inputa, nasli smo optimum
                 if (topScore <= inputFitness) {
+                    System.out.println("Returning " + input);
+//                    return Optional.of(input);
                     break;
-                    // System.out.println("Returning " + input);
-                    // return Optional.of(input);
                 }
                 var fittest = new ArrayList<BitVector>();
                 for (int i = 0; i < neighbors.length; i++) {
@@ -60,10 +61,10 @@ public class ILS implements IOptAlgorithm {
                         fittest.add(neighbors[i]);
                     }
                 }
-                System.out.println("There are " + fittest.size() + " neighbors with same score.");
+//                System.out.println("There are " + fittest.size() + " neighbors with same score.");
                 input = fittest.get(rand.nextInt(fittest.size()));
-                System.out.println("Chose " + input + " as next input");
-                System.out.println("-".repeat(50));
+//                System.out.println("Chose " + input + " as next input");
+//                System.out.println("-".repeat(50));
             }
         }
         // not found

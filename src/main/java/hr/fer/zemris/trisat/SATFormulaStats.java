@@ -3,15 +3,22 @@ package hr.fer.zemris.trisat;
 public class SATFormulaStats {
     private SATFormula formula;
     private BitVector assignment;
+    private double[] post;
 
     public SATFormulaStats(SATFormula formula) {
         this.formula = formula;
+        post = new double[formula.getNumberOfClauses()];
     }
 
     // analizira se predano rješenje i pamte svi relevantni pokazatelji
     // primjerice, ažurira elemente polja post[...] ako drugi argument to dozvoli; računa Z; ...
     public void setAssignment(BitVector assignment, boolean updatePercentages) {
         this.assignment = assignment;
+        for (int i = 0; i < formula.getNumberOfClauses(); i++) {
+            if (formula.satisfiesClause(assignment, i)) {
+
+            }
+        }
     }
 
     // vraća temeljem onoga što je setAssignment zapamtio: broj klauzula koje su zadovoljene

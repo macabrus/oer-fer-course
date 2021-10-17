@@ -12,11 +12,11 @@ import java.util.Set;
 // which runs in exponential time
 // tries every possible combination of variables until it finds right one
 // not very efficient...
-public class BruteForce implements IOptAlgorithm {
+public class Algorithm1 implements IOptAlgorithm {
 
     private SATFormula formula;
 
-    public BruteForce(SATFormula formula) {
+    public Algorithm1(SATFormula formula) {
         this.formula = formula;
     }
 

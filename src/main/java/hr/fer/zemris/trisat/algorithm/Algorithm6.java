@@ -6,11 +6,11 @@ import hr.fer.zemris.trisat.SATFormula;
 
 import java.util.Optional;
 
-public class GSAT implements IOptAlgorithm {
+public class Algorithm6 implements IOptAlgorithm {
+
     private SATFormula formula;
 
-    public GSAT(SATFormula formula) {
-
+    public Algorithm6(SATFormula formula) {
         this.formula = formula;
     }
 

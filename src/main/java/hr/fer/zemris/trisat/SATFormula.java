@@ -1,5 +1,6 @@
 package hr.fer.zemris.trisat;
 
+import java.util.AbstractMap;
 import java.util.Arrays;
 
 public class SATFormula {
@@ -24,6 +25,18 @@ public class SATFormula {
         return masks.length;
     }
 
+    public int getNumberOfSatisfiedClauses(BitVector bv) {
+        var input = bv.copy();
+        int numOfSatisfied = 0;
+        for (int i = 0; i < masks.length; i++) {
+            var result = input.xor(inverts[i]).and(masks[i]);
+            if (!result.isEmpty()) {
+                numOfSatisfied++;
+            }
+        }
+        return numOfSatisfied;
+    }
+
     public boolean satisfiesClause(BitVector input, int clauseIndex) {
         return !input.copy().xor(inverts[clauseIndex]).and(masks[clauseIndex]).isEmpty();
     }
@@ -37,6 +50,10 @@ public class SATFormula {
             }
         }
         return true;
+    }
+
+    public AbstractMap.SimpleEntry<BitVector, BitVector> getClause(int i) {
+        return new AbstractMap.SimpleEntry<>(inverts[i].copy(), masks[i].copy());
     }
 
     @Override

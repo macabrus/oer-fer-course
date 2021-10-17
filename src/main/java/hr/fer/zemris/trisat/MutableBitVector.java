@@ -51,6 +51,15 @@ public class MutableBitVector extends BitVector {
         bitSet.set(i, true);
     }
 
+    public MutableBitVector flip(int i) {
+        if (i < 0 || i >= len) {
+            throw new IndexOutOfBoundsException("Can't flip index outside of bit vector bounds");
+        }
+        var copy = copyBackingBitSet();
+        copy.flip(i);
+        return new MutableBitVector(copy, len);
+    }
+
     // zapisuje predanu vrijednost u zadanu varijablu
     public void set(int index, boolean value) {
 
