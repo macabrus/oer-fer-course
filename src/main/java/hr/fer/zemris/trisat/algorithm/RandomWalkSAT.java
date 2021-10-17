@@ -10,8 +10,8 @@ public class RandomWalkSAT implements IOptAlgorithm {
     private SATFormula formula;
     private static final int MAX_ITER = 100000; // force stop even if local optimum is not yet found
     private static final int MAX_TRIES = 100000;
-    private static final int MAX_FLIPS = 3;
-    private static final double p = 0.2;
+    private static final int MAX_FLIPS = 5;
+    private static final double p = 0.7;
     private final Random rand = new Random();
     public RandomWalkSAT(SATFormula formula) {
         this.formula = formula;
