@@ -96,6 +96,4 @@ class Algorithm6Test extends BaseTest {
         var rws = new Algorithm6(formula);
         rws.solve(Optional.empty()).ifPresentOrElse(res -> System.out.println("Found: " + res), () -> System.out.println("Not found (ok)."));
     }
-
-
 }

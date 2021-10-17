@@ -7,7 +7,7 @@ import hr.fer.zemris.trisat.SATFormulaStats;
 
 import java.util.*;
 
-// Multistart local search (isti ko zadatak 2 ako stavimo max tries = 1)
+// Multistart local search (moze biti i single start)
 // 1. starts with n random inputs
 // 2. evaluate their fitness
 // 3. compute neighbors of fittest one

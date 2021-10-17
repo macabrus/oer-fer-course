@@ -37,7 +37,7 @@ class Algorithm3Test extends BaseTest {
     @Test
     void test0100() {
         // ponekad ne nade rjesenje...
-        var formula = prepareFormula("/01-3sat/uf50-010.cnf");
+        var formula = prepareFormula("/01-3sat/uf50-0100.cnf");
         var alg3 = new Algorithm3(formula);
         alg3.solve(Optional.empty()).ifPresent(res -> System.out.println("Solution was found!" + res));
     }
@@ -45,7 +45,7 @@ class Algorithm3Test extends BaseTest {
     @Test
     void test01000() {
         // ponekad ne nade rjesenje...
-        var formula = prepareFormula("/01-3sat/uf50-010.cnf");
+        var formula = prepareFormula("/01-3sat/uf50-01000.cnf");
         var alg3 = new Algorithm3(formula);
         alg3.solve(Optional.empty()).ifPresent(res -> System.out.println("Solution was found!" + res));
     }

@@ -45,10 +45,10 @@ public class Algorithm3 implements IOptAlgorithm {
             }
 //            System.out.println(Arrays.toString(post));
             var topNeighbors = Arrays.stream(genNeighbors(input))
-                .map(n -> new AbstractMap.SimpleEntry<>(computeFitness(n), n))
+                .map(n -> Map.entry(computeFitness(n), n))
                 .sorted(Comparator.comparing(e -> -e.getKey()))
                 .limit(numberOfBest)
-                .map(AbstractMap.SimpleEntry::getValue)
+                .map(Map.Entry::getValue)
                 .toArray(BitVector[]::new);
             input = topNeighbors[rand.nextInt(topNeighbors.length)];
 //            sleep(1000);
@@ -62,6 +62,7 @@ public class Algorithm3 implements IOptAlgorithm {
             e.printStackTrace();
         }
     }
+
     // racuna Z
     private int computeFitness(BitVector input) {
         var Z = 0;

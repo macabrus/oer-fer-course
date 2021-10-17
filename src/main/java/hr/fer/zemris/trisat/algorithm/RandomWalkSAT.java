@@ -9,9 +9,8 @@ import java.util.*;
 public class RandomWalkSAT implements IOptAlgorithm {
     private SATFormula formula;
     private static final int MAX_ITER = 100000; // force stop even if local optimum is not yet found
-    private static final int MAX_TRIES = 100000;
     private static final int MAX_FLIPS = 5;
-    private static final double p = 0.7;
+    private static final double p = 0.1;
     private final Random rand = new Random();
     public RandomWalkSAT(SATFormula formula) {
         this.formula = formula;
@@ -21,16 +20,16 @@ public class RandomWalkSAT implements IOptAlgorithm {
     public Optional<BitVector> solve(Optional<BitVector> initial) {
         //for restart = 1 do MAX-TRIES
         BitVector input = initial.orElseGet(() -> new BitVector(rand, formula.getNumberOfVariables()));
-        for (int retry = 0; retry < MAX_TRIES; retry++) {
+        for (int i = 0; i < MAX_ITER; i++) {
             System.out.println("Trying:  " + input);
             System.out.println("Fitness: " + formula.getNumberOfSatisfiedClauses(input) + "/" + formula.getNumberOfClauses());
             if (formula.isSatisfied(input)) {
                 return Optional.of(input);
             }
             var unsatisfiedClauses = new ArrayList<Integer>();
-            for (int i = 0; i < formula.getNumberOfClauses(); i++) {
-                if (formula.satisfiesClause(input, i)) {
-                    unsatisfiedClauses.add(i);
+            for (int j = 0; j < formula.getNumberOfClauses(); j++) {
+                if (formula.satisfiesClause(input, j)) {
+                    unsatisfiedClauses.add(j);
                 }
             }
             for(int flip = 0; flip < MAX_FLIPS; flip++) {
