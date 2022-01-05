@@ -9,6 +9,8 @@ public class RectSolution extends GASolution<int[]>{
     public GASolution<int[]> duplicate() {
         var dataCopy = new int[data.length];
         System.arraycopy(data, 0, dataCopy, 0, data.length);
-        return new RectSolution(dataCopy);
+        var tmp = new RectSolution(dataCopy);
+        tmp.fitness = fitness;
+        return tmp;
     }
 }

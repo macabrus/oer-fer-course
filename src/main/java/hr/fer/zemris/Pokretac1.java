@@ -12,8 +12,8 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import static java.lang.Math.max;
@@ -24,33 +24,42 @@ public class Pokretac1 {
     LinkedBlockingQueue<RectSolution> solutions = new LinkedBlockingQueue<>();
     LinkedBlockingQueue<RectSolution> evaluatedSolutions = new LinkedBlockingQueue<>();
     // broj iteracija evaluiranja, biranja, krizanja, mutiranja
-    private int maxIter = 10000;
+    private int maxIter = 30000;
     // broj generiranih rjesenja
-    private int popSize = 32;
+    private int popSize = 30;
     // broj pravokutnika po jedinki
-    private int numRectangles = 30;
+    private int numRectangles = 300;
     // K-turnirska selekcija
-    private int k = 3;
+    private int k = 5;
     // number of pixels mutation can move rectangle for
     private int mutationIntensity = 10;
     // probability that mutation will happen on each rectangle
-    private double mutationProbability = 0.5;
+    private double mutationProbability = 0.1;
+    private int maxRectWidth = 200;
+    private int maxRectHeight = 200;
     //global best solution
     private RectSolution globalBest;
 
     public void run() throws URISyntaxException, IOException, InterruptedException {
+        // init gui
         JFrame frame = new JFrame();
         JLabel picLabel = new JLabel();
         frame.add(picLabel);
         frame.setPreferredSize(new Dimension(200, 133));
         frame.pack();
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setVisible(true);
+
+        // load image
         GrayScaleImage mainImage = GrayScaleImage.load(new File(getClass().getResource("/kuca.png").toURI()));
-        pool = new Thread[Runtime.getRuntime().availableProcessors()];
+
         // make evaluator worker threads, each with copy of an image
+        pool = new Thread[Runtime.getRuntime().availableProcessors()];
         for (int i = 0; i < pool.length; i ++) {
+
             pool[i] = new Thread(new Runnable() {
-                private GrayScaleImage image = new GrayScaleImage(mainImage.getData().clone(), mainImage.getWidth(), mainImage.getHeight());
+                // svaka dretva ima svog evaluatora
+                private final Evaluator evaluator = new Evaluator(mainImage);
                 @Override
                 public void run() {
                     while (true) {
@@ -64,7 +73,6 @@ public class Pokretac1 {
                             return;
                         }
                         // System.out.println("Evaluating image");
-                        var evaluator = new Evaluator(image);
                         evaluator.evaluate(solution);
                         try {
                             evaluatedSolutions.put(solution);
@@ -76,7 +84,7 @@ public class Pokretac1 {
             });
             pool[i].start();
         }
-        System.out.println("Generating initial %s solutions on queue".formatted(popSize));
+        // System.out.println("Generating initial %s solutions on queue".formatted(popSize));
         var rng = RNG.getRNG();
         for (int i = 0; i < popSize; i++) {
             var data = new int[numRectangles * 5 + 1];
@@ -85,45 +93,70 @@ public class Pokretac1 {
             for(int j = 1; j < numRectangles * 5; j += 5) {
                 data[j + 0] = rng.nextInt(0, mainImage.getWidth()); // x
                 data[j + 1] = rng.nextInt(0, mainImage.getHeight()); // y
-                data[j + 2] = rng.nextInt(data[j + 0], mainImage.getWidth()) - data[j + 0]; // w
-                data[j + 3] = rng.nextInt(data[j + 1], mainImage.getHeight()) - data[j + 1]; // h
+                data[j + 2] = min(maxRectWidth, rng.nextInt(data[j + 0], mainImage.getWidth()) - data[j + 0]); // w
+                data[j + 3] = min(maxRectHeight, rng.nextInt(data[j + 1], mainImage.getHeight()) - data[j + 1]); // h
                 data[j + 4] = rng.nextInt(0, 255);
             }
             solutions.put(new RectSolution(data));
         }
         for (int i = 0; i < maxIter; i++) {
-            System.out.println("Performing iteration %s".formatted(i));
+            // System.out.println("Performing iteration %s".formatted(i));
             var currentPop = new ArrayList<RectSolution>();
             for (int j = 0; j < popSize; j++) {
                 var evaluatedSol = evaluatedSolutions.take();
                 currentPop.add(evaluatedSol);
             }
-            System.out.println("Gathered all evaluated solutions");
+            // sort by fitness
+            // currentPop.sort(Comparator.comparing(sol -> sol.fitness));
+            // System.out.println("Gathered all evaluated solutions");
             // remember best solution
             var iterBest = bestOf(currentPop, Comparator.comparing(e -> e.fitness));
             if (globalBest == null || globalBest.fitness <= iterBest.fitness) {
-                globalBest = iterBest;
+                System.out.println("Best updated");
+                globalBest = (RectSolution) iterBest.duplicate();
                 SwingUtilities.invokeLater(() -> {
                     Evaluator e = new Evaluator(mainImage);
                     var im = e.draw(globalBest, new GrayScaleImage(mainImage.getWidth(), mainImage.getHeight()));
                     picLabel.setIcon(new ImageIcon(im.toBufferedImage()));
                 });
             }
-            System.out.println("Global best fitness: %s".formatted(globalBest.fitness));
+            // System.out.println("Global best fitness: %s".formatted(globalBest.fitness));
+            // System.out.println("Performing crossover and mutation");
             for (int j = 0; j < popSize; j++) {
                 // System.out.println("Performing selection, crossover & mutation");
                 // selection
-                var mom = bestOf(pickNRandomElements(currentPop, k, rng), Comparator.comparing(e -> e.fitness));
-                var dad = bestOf(pickNRandomElements(currentPop, k, rng), Comparator.comparing(e -> e.fitness));
+                var momSol = bestOf(pickNRandomElements(currentPop, k, rng), Comparator.comparing(e -> e.fitness));
+                var mom = momSol.getData();
+                currentPop.remove(mom);
+                var dad = bestOf(pickNRandomElements(currentPop, k, rng), Comparator.comparing(e -> e.fitness)).getData();
                 // crossover
                 var childData = new int[numRectangles * 5 + 1];
-                var crossoverPoint = rng.nextInt(1, numRectangles * 5);
-                System.arraycopy(mom.getData(), 0, childData, 0, crossoverPoint);
-                System.arraycopy(dad.getData(), crossoverPoint, childData, crossoverPoint, childData.length - crossoverPoint);
+                // var crossoverPoint = rng.nextInt(1, numRectangles * 5);
+                // System.out.println("Crossover point: %s".formatted(crossoverPoint));
+                // Thread.sleep(500);
+                childData[0] = rng.nextDouble() < 0.5 ? mom[0] : dad[0];
+                for (int k = 1; k < childData.length; k += 5) {
+                    if (rng.nextDouble() < 0.5) {
+                        childData[k + 0] = mom[k + 0];
+                        childData[k + 1] = mom[k + 1];
+                        childData[k + 2] = mom[k + 2];
+                        childData[k + 3] = mom[k + 3];
+                        childData[k + 4] = mom[k + 4];
+                    }
+                    else {
+                        childData[k + 0] = dad[k + 0];
+                        childData[k + 1] = dad[k + 1];
+                        childData[k + 2] = dad[k + 2];
+                        childData[k + 3] = dad[k + 3];
+                        childData[k + 4] = dad[k + 4];
+                    }
+                }
+                // System.arraycopy(mom.getData(), 0, childData, 0, crossoverPoint);
+                // System.arraycopy(dad.getData(), crossoverPoint, childData, crossoverPoint, childData.length - crossoverPoint);
                 var child = new RectSolution(childData);
                 // TODO: mutate child
                 mutate(child, mainImage.getWidth(), mainImage.getHeight());
-                // add to next pop
+                // evaluate child
                 solutions.put(child);
             }
         }
@@ -176,8 +209,8 @@ public class Pokretac1 {
                 }
                 rects[i] = tlX;
                 rects[i + 1] = tlY;
-                rects[i + 2] = brX - tlX;
-                rects[i + 3] = brY - tlY;
+                rects[i + 2] = min(maxRectWidth, brX - tlX);
+                rects[i + 3] = min(maxRectHeight, brY - tlY);
                 // color mutation
                 rects[i + 4] = min(255, max(0, rects[i + 4] + rng.nextInt(0, mutationIntensity * 2) - mutationIntensity));
             }

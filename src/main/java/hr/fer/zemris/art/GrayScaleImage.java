@@ -30,10 +30,13 @@ public class GrayScaleImage {
     public int getHeight() {
         return height;
     }
+
     public void clear ( byte color){
         int index = 0;
         for (int h = 0; h < height; h++) {
             for (int w = 0; w < width; w++) {
+                data[index] = color;
+                index++;
             }
         }
     }
