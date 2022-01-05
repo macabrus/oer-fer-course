@@ -26,15 +26,15 @@ public class Pokretac1 {
     // broj iteracija evaluiranja, biranja, krizanja, mutiranja
     private int maxIter = 30000;
     // broj generiranih rjesenja
-    private int popSize = 30;
+    private int popSize = 50;
     // broj pravokutnika po jedinki
-    private int numRectangles = 300;
+    private int numRectangles = 200;
     // K-turnirska selekcija
-    private int k = 5;
+    private int k = 3;
     // number of pixels mutation can move rectangle for
     private int mutationIntensity = 10;
     // probability that mutation will happen on each rectangle
-    private double mutationProbability = 0.1;
+    private double mutationProbability = 0.03;
     private int maxRectWidth = 200;
     private int maxRectHeight = 200;
     //global best solution
@@ -112,8 +112,8 @@ public class Pokretac1 {
             // remember best solution
             var iterBest = bestOf(currentPop, Comparator.comparing(e -> e.fitness));
             if (globalBest == null || globalBest.fitness <= iterBest.fitness) {
-                System.out.println("Best updated");
                 globalBest = (RectSolution) iterBest.duplicate();
+                System.out.println("Best updated %s".formatted(globalBest.fitness));
                 SwingUtilities.invokeLater(() -> {
                     Evaluator e = new Evaluator(mainImage);
                     var im = e.draw(globalBest, new GrayScaleImage(mainImage.getWidth(), mainImage.getHeight()));
@@ -193,26 +193,34 @@ public class Pokretac1 {
         var rng = RNG.getRNG();
         for (int i = 1; i < rects.length; i += 5) {
             if (rng.nextDouble() < mutationProbability) {
-                var tlX = min(w, max(0, rects[i] + rng.nextInt(0, mutationIntensity * 2) - mutationIntensity));
-                var tlY = min(h, max(0, rects[i + 1] + rng.nextInt(0, mutationIntensity * 2) - mutationIntensity));
-                var brX = min(w, max(0, rects[i] + rects[i + 2] + rng.nextInt(0, mutationIntensity * 2) - mutationIntensity));
-                var brY = min(h, max(0, rects[i + 1] + rects[i + 3] + rng.nextInt(0, mutationIntensity * 2) - mutationIntensity));
-                if (tlX > brX) {
-                    var tmp = tlX;
-                    tlX = brX;
-                    brX = tmp;
-                }
-                if (tlY > brY) {
-                    var tmp = tlY;
-                    tlY = brY;
-                    brY = tmp;
-                }
-                rects[i] = tlX;
-                rects[i + 1] = tlY;
-                rects[i + 2] = min(maxRectWidth, brX - tlX);
-                rects[i + 3] = min(maxRectHeight, brY - tlY);
-                // color mutation
-                rects[i + 4] = min(255, max(0, rects[i + 4] + rng.nextInt(0, mutationIntensity * 2) - mutationIntensity));
+                // var tlX = min(w, max(0, rects[i] + rng.nextInt(0, mutationIntensity * 2) - mutationIntensity));
+                // var tlY = min(h, max(0, rects[i + 1] + rng.nextInt(0, mutationIntensity * 2) - mutationIntensity));
+                // var brX = min(w, max(0, rects[i] + rects[i + 2] + rng.nextInt(0, mutationIntensity * 2) - mutationIntensity));
+                // var brY = min(h, max(0, rects[i + 1] + rects[i + 3] + rng.nextInt(0, mutationIntensity * 2) - mutationIntensity));
+                // if (tlX > brX) {
+                //     var tmp = tlX;
+                //     tlX = brX;
+                //     brX = tmp;
+                // }
+                // if (tlY > brY) {
+                //     var tmp = tlY;
+                //     tlY = brY;
+                //     brY = tmp;
+                // }
+                // rects[i] = tlX;
+                // rects[i + 1] = tlY;
+                // rects[i + 2] = min(maxRectWidth, brX - tlX);
+                // rects[i + 3] = min(maxRectHeight, brY - tlY);
+                // // color mutation
+                // rects[i + 4] = min(255, max(0, rects[i + 4] + rng.nextInt(0, mutationIntensity * 2) - mutationIntensity));
+
+
+                // anther version of mutation
+                rects[i] = rng.nextInt(0, w);
+                rects[i + 1] = rng.nextInt(0, h);
+                rects[i + 2] = rng.nextInt(rects[i], w);
+                rects[i + 3] = rng.nextInt(rects[i + 1], h);
+                rects[i + 4] = rng.nextInt(0, 255);
             }
         }
     }
