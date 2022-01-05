@@ -17,6 +17,12 @@ public class GrayScaleImage {
         this.data = new byte[height * width];
     }
 
+    public GrayScaleImage(byte[] data, int w, int h) {
+        this.width = w;
+        this.height = h;
+        this.data = data;
+    }
+
     public int getWidth () {
         return width;
     }
@@ -52,6 +58,21 @@ public class GrayScaleImage {
                 index++;
             }
         }
+    }
+
+    public BufferedImage toBufferedImage() {
+        BufferedImage bim = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
+        int[] buf = new int[1];
+        WritableRaster r = bim.getRaster();
+        int index = 0;
+        for (int h = 0; h < height; h++) {
+            for (int w = 0; w < width; w++) {
+                buf[0] = (int) data[index] & 0xFF;
+                r.setPixel(w, h, buf);
+                index++;
+            }
+        }
+        return bim;
     }
 
 
@@ -95,10 +116,7 @@ public class GrayScaleImage {
             }
         } catch (Exception ex) {
             throw new IOException("Slika nije grayscale.");
-            return im;
-            byte b1 = (byte) 128;
-            byte b2 = (byte) 127;
-            int razlika = b1 - b2; // ==> bit će -255 a ne 1 kako bi očekivali
         }
+        return im;
     }
 }

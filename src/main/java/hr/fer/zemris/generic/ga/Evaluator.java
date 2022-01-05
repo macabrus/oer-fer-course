@@ -2,7 +2,7 @@ package hr.fer.zemris.generic.ga;
 
 import hr.fer.zemris.art.GrayScaleImage;
 
-class Evaluator implements IGAEvaluator<int[]> {
+public class Evaluator implements IGAEvaluator<int[]> {
     private GrayScaleImage template;
     private GrayScaleImage im;
 
@@ -30,7 +30,8 @@ class Evaluator implements IGAEvaluator<int[]> {
     }
 
     @Override
-    public void evaluate(GASolution<int[]> p) { // Ovo nije višedretveno sigurno! if(im == null) {
+    public void evaluate(GASolution<int[]> p) {
+        // Ovo nije višedretveno sigurno! if(im == null) {
         im = new GrayScaleImage(template.getWidth(), template.getHeight());
         draw(p, im);
         byte[] data = im.getData();

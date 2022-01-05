@@ -1,7 +1,10 @@
 package hr.fer.zemris.generic.ga;
+
+// a single solution consisting of rectangle list
 public abstract class GASolution<T> implements Comparable<GASolution<T>> {
     protected T data;
     public double fitness;
+    public boolean poison = false;
 
     public GASolution() { }
 
